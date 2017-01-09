@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Yoda\EventBundle\Entity\Event;
 use Yoda\EventBundle\Form\EventType;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * Event controller.
@@ -14,13 +15,13 @@ use Yoda\EventBundle\Form\EventType;
  */
 class EventController extends Controller
 {
-
     /**
      * Lists all Event entities.
      * @Template()
      */
     public function indexAction()
     {
+
         $em = $this->getDoctrine()->getManager();
 
         $entities = $em->getRepository('EventBundle:Event')->findAll();
@@ -29,12 +30,17 @@ class EventController extends Controller
             'entities' => $entities,
         );
     }
+
+
     /**
      * Creates a new Event entity.
      *
      */
     public function createAction(Request $request)
     {
+        $this->enforceUserSecurity();
+
+
         $entity = new Event();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
@@ -72,12 +78,16 @@ class EventController extends Controller
         return $form;
     }
 
+
     /**
      * Displays a form to create a new Event entity.
      *
      */
     public function newAction()
     {
+        $this->enforceUserSecurity();
+
+
         $entity = new Event();
         $form   = $this->createCreateForm($entity);
 
@@ -86,6 +96,7 @@ class EventController extends Controller
             'form'   => $form->createView(),
         ));
     }
+
 
     /**
      * Finds and displays a Event entity.
@@ -109,12 +120,16 @@ class EventController extends Controller
         ));
     }
 
+
     /**
      * Displays a form to edit an existing Event entity.
      *
      */
     public function editAction($id)
     {
+        $this->enforceUserSecurity();
+
+
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('EventBundle:Event')->find($id);
@@ -151,12 +166,17 @@ class EventController extends Controller
 
         return $form;
     }
+
+
     /**
      * Edits an existing Event entity.
      *
      */
     public function updateAction(Request $request, $id)
     {
+        $this->enforceUserSecurity();
+
+
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('EventBundle:Event')->find($id);
@@ -181,12 +201,16 @@ class EventController extends Controller
             'delete_form' => $deleteForm->createView(),
         ));
     }
+
+
     /**
      * Deletes a Event entity.
      *
      */
     public function deleteAction(Request $request, $id)
     {
+        $this->enforceUserSecurity();
+
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
 
@@ -221,4 +245,14 @@ class EventController extends Controller
             ->getForm()
         ;
     }
+
+    private function enforceUserSecurity()
+    {
+        $securityContext = $this->container->get('security.context');
+        if (!$securityContext->isGranted('ROLE_USER')) {
+            throw new AccessDeniedException('Need ROLE_USER!');
+        }
+    }
+
+
 }
