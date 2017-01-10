@@ -3,10 +3,10 @@
 namespace Yoda\UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
 /**
+ * @ORM\Entity
  * @ORM\Table(name="yoda_user")
  * @ORM\Entity(repositoryClass="Yoda\UserBundle\Entity\UserRepository")
  */
@@ -30,37 +30,20 @@ class User implements AdvancedUserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="json_array")
+     * @ORM\Column(name="roles", type="json_array")
      */
     private $roles = array();
 
     /**
-     * @var bool
-     *
      * @ORM\Column(type="boolean")
      */
     private $isActive = true;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(name="email", type="string", length=255)
      */
     private $email;
 
-    /**
-     * @return mixed
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param mixed $email
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-    }
 
     /**
      * @return boolean
@@ -78,25 +61,23 @@ class User implements AdvancedUserInterface
         $this->isActive = $isActive;
     }
 
-
-
-    public function getRoles()
+    /**
+     * @return mixed
+     */
+    public function getEmail()
     {
-        $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
+        return $this->email;
     }
 
-    public function setRoles(array $roles)
+    /**
+     * @param mixed $email
+     */
+    public function setEmail($email)
     {
-        $this->roles = $roles;
-
-        // allows for chaining
-        return $this;
+        $this->email = $email;
     }
 
-
+    
     /**
      * Get id
      *
@@ -153,6 +134,21 @@ class User implements AdvancedUserInterface
         return $this->password;
     }
 
+    public function getRoles()
+    {
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles)
+    {
+        $this->roles = $roles;
+
+        // allows for chaining
+        return $this;
+    }
 
     public function eraseCredentials()
     {

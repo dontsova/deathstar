@@ -3,7 +3,6 @@
 namespace Yoda\UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
 /**
@@ -30,7 +29,7 @@ class User implements AdvancedUserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="json_array")
+     * @ORM\Column(name="roles", type="json_array")
      */
     private $roles = array();
 
@@ -42,30 +41,43 @@ class User implements AdvancedUserInterface
     private $isActive = true;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(name="email" type="string", length=255)
      */
     private $email;
 
-
-
-
-    public function getRoles()
+    /**
+     * @return boolean
+     */
+    public function getIsActive()
     {
-        $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
+        return $this->isActive;
     }
 
-    public function setRoles(array $roles)
+    /**
+     * @param boolean $isActive
+     */
+    public function setIsActive($isActive)
     {
-        $this->roles = $roles;
-
-        // allows for chaining
-        return $this;
+        $this->isActive = $isActive;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
 
+    /**
+     * @param mixed $email
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    
     /**
      * Get id
      *
@@ -122,6 +134,21 @@ class User implements AdvancedUserInterface
         return $this->password;
     }
 
+    public function getRoles()
+    {
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles)
+    {
+        $this->roles = $roles;
+
+        // allows for chaining
+        return $this;
+    }
 
     public function eraseCredentials()
     {
@@ -150,7 +177,6 @@ class User implements AdvancedUserInterface
 
     public function isEnabled()
     {
-        //return $this->getIsActive()
-        return true;
+        return $this->getIsActive();
     }
 }
